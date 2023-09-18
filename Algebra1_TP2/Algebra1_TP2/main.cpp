@@ -1,6 +1,5 @@
-#include "raylib.h"
 #include <iostream>
-#include "raymath.h"
+#include "raylib.h"
 
 using namespace std;
 
@@ -16,14 +15,17 @@ int main()
 	int userInput = 0;
 	int vectorLength = GetRandomValue(10, 100); //Largo de A y B
 	int aAxis = GetRandomValue(1, 3); //Si es X, Y o Z
-	float cLength = 1.0f / userInput * vectorLength;
 
 	cin >> userInput;
+
+	float cLength = 1.0f / userInput * vectorLength;
 
 	values(A, B, C, vectorLength, aAxis, cLength);
 
 	const int screenWidth = 1366;
 	const int screenHeight = 768;
+
+	SetTargetFPS(144);
 
 	InitWindow(screenWidth, screenHeight, "raylib [core] example - 3d camera mode");
 
@@ -34,17 +36,25 @@ int main()
 	camera.fovy = 45.0f;                       // Camera field-of-view Y
 	camera.projection = CAMERA_PERSPECTIVE;    // Camera mode type
 
+	DisableCursor();
+
+	cout << vectorLength;
+
 	while (!WindowShouldClose())
 	{
+		UpdateCamera(&camera, CAMERA_FREE);
+
+		if (IsKeyDown('Z')) camera.target = { 0.0f, 0.0f, 0.0f };
+
 		BeginDrawing();
 
 		ClearBackground(RAYWHITE);
 
 		BeginMode3D(camera);
 
-		DrawLine3D(ABC, A, BLACK);
-		DrawLine3D(ABC, B, BLACK);
-		DrawLine3D(ABC, C, BLACK);
+		DrawLine3D(ABC, A, RED);
+		DrawLine3D(ABC, B, GREEN);
+		DrawLine3D(ABC, C, BLUE);
 
 		DrawGrid(10, 1.0f);
 
@@ -107,6 +117,6 @@ void values(Vector3& A, Vector3& B, Vector3& C, int vectorLength, int aAxis, flo
 
 		C.x = cLength;
 		C.y = 0;
-		C.z = 0;
+		C.z = 0;
 	}
 }
