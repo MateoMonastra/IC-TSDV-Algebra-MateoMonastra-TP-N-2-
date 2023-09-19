@@ -19,7 +19,7 @@ int main()
 	Vector3 firstLineA;
 	Vector3 firstLineB;
 	Vector3 firstLineC;
-	Vector3 Zero = { 0, 0, 0 };
+	Vector3 zero = { 0, 0, 0 };
 
 	int userInput = 0;
 	int vectorLength = GetRandomValue(10, 10); //Largo de A y B
@@ -28,8 +28,9 @@ int main()
 	cout << "Por cuanto quieres que se divida el vector random? (El resultado de este numero es la distancia del eje z)" << endl;
 	cin >> userInput;
 
-	float cLength = 1.0f / userInput * vectorLength;
+	float segmentSize = 1.0f / userInput;
 
+	float cLength = segmentSize * vectorLength;
 
 	const int screenWidth = 1366;
 	const int screenHeight = 768;
@@ -65,31 +66,50 @@ int main()
 		//DRAWING
 		BeginDrawing();
 
-		ClearBackground(RAYWHITE);
+		ClearBackground(DARKGRAY);
 
 		BeginMode3D(camera);
 
-
-
 		//Basic lines, A, B and C
-		DrawLine3D(Zero, firstLineA, RED);
-		DrawLine3D(Zero, firstLineB, GREEN);
-		DrawLine3D(Zero, firstLineC, BLUE);
+		DrawLine3D(zero, firstLineA, RED);
+		DrawLine3D(zero, firstLineB, GREEN);
+		DrawLine3D(zero, firstLineC, BLUE);
 
-		Vector3 prueba = Vector3Add(firstLineA, firstLineB);
+		Vector3 displacementX = { firstLineA.x * segmentSize, firstLineA.y * segmentSize, firstLineA.z * segmentSize };
+		Vector3 displacementY = { firstLineB.x * segmentSize, firstLineB.y * segmentSize, firstLineB.z * segmentSize };
 
-		// Pyramid base lines
-		DrawLine3D(firstLineA, Vector3Add(firstLineA, firstLineB), BLACK);
-		DrawLine3D(firstLineB, Vector3Add(firstLineA, firstLineB), BLACK);
+		Vector3 upRight = Vector3Add(displacementX, displacementY);
+		Vector3 upLeft = Vector3Add(Vector3Scale(displacementX, -1.0f), displacementY);
+		Vector3 downRight = Vector3Subtract(displacementX, displacementY);
+		Vector3 downLeft = Vector3Subtract(Vector3Scale(displacementX, -1.0f), displacementY);
 
-		DrawLine3D(firstLineC, Vector3Add(firstLineA, firstLineC), BLACK);
-		DrawLine3D(firstLineC, Vector3Add(firstLineB, firstLineC), BLACK);
-		DrawLine3D(Vector3Add(firstLineC, prueba), Vector3Add(firstLineA, firstLineC), BLACK);
-		DrawLine3D(Vector3Add(firstLineC, prueba), Vector3Add(firstLineB, firstLineC), BLACK);
+		Vector3 zeroToLine = zero;
+		Vector3 auxA = firstLineA;
+		Vector3 auxB = firstLineB;
+		Vector3 floatPoint = Vector3Add(firstLineA, firstLineB);
 
-		DrawLine3D(firstLineA, Vector3Add(firstLineA, firstLineC), BLACK);
-		DrawLine3D(firstLineB, Vector3Add(firstLineB, firstLineC), BLACK);
-		DrawLine3D(Vector3Add(firstLineA, firstLineB), Vector3Add(firstLineC, prueba), BLACK);
+		for (int i = 0; i < (1 / segmentSize) / 2; i++)
+		{
+			DrawLine3D(Vector3Add(zeroToLine, (Vector3Scale(upRight, i))), Vector3Add(Vector3Add(zeroToLine, (Vector3Scale(upRight, i))), firstLineC), BLACK);
+			DrawLine3D(Vector3Add(auxA, (Vector3Scale(upLeft, i))), Vector3Add(Vector3Add(auxA, (Vector3Scale(upLeft, i))), firstLineC), BLACK);
+			DrawLine3D(Vector3Add(auxB, (Vector3Scale(downRight, i))), Vector3Add(Vector3Add(auxB, (Vector3Scale(downRight, i))), firstLineC), BLACK);
+			DrawLine3D(Vector3Add(floatPoint, (Vector3Scale(downLeft, i))), Vector3Add(Vector3Add(floatPoint, (Vector3Scale(downLeft, i))), firstLineC), BLACK);
+		
+			DrawLine3D(Vector3Add(zeroToLine, Vector3Scale(upRight, i)), Vector3Add(auxA, Vector3Scale(upLeft, i)), GREEN);
+			DrawLine3D(Vector3Add(zeroToLine, Vector3Scale(upRight, i)), Vector3Add(auxB, Vector3Scale(downRight, i)), GREEN);
+			DrawLine3D(Vector3Add(floatPoint, Vector3Scale(downLeft, i)), Vector3Add(auxA, Vector3Scale(upLeft, i)), GREEN);
+			DrawLine3D(Vector3Add(floatPoint, Vector3Scale(downLeft, i)), Vector3Add(auxB, Vector3Scale(downRight, i)), GREEN);
+
+			zeroToLine = Vector3Add(zeroToLine, firstLineC);
+			auxA = Vector3Add(auxA, firstLineC);
+			auxB = Vector3Add(auxB, firstLineC);
+			floatPoint = Vector3Add(floatPoint, firstLineC);
+
+			DrawLine3D(Vector3Add(zeroToLine, Vector3Scale(upRight, i)), Vector3Add(auxA, Vector3Scale(upLeft, i)), GREEN);
+			DrawLine3D(Vector3Add(zeroToLine, Vector3Scale(upRight, i)), Vector3Add(auxB, Vector3Scale(downRight, i)), GREEN);
+			DrawLine3D(Vector3Add(floatPoint, Vector3Scale(downLeft, i)), Vector3Add(auxA, Vector3Scale(upLeft, i)), GREEN);
+			DrawLine3D(Vector3Add(floatPoint, Vector3Scale(downLeft, i)), Vector3Add(auxB, Vector3Scale(downRight, i)), GREEN);
+		}
 
 		EndMode3D();
 
