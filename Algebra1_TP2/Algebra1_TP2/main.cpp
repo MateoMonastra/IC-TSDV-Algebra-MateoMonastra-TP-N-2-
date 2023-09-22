@@ -71,8 +71,6 @@ int main()
 	{
 		//------------------------------------------------------------------------------------------
 		//UPDATE
-
-
 		UpdateCamera(&camera, CAMERA_FREE); // camera movement
 
 		if (IsKeyDown('Z')) camera.target = { 0.0f, 0.0f, 0.0f };
@@ -141,13 +139,13 @@ int main()
 			cout << "VOLUMEN = " << totalVolume << endl;
 		}
 
-		DrawText(TextFormat("%01i", totalArea), 20, 20, 200, WHITE);
-		DrawText(TextFormat("%01i", totalPerimeter), 20, 40, 200, WHITE);
-		DrawText(TextFormat("%01i", totalVolume), 20, 60, 200, WHITE);
-
 		calculationStop = true;
 
 		EndMode3D();
+
+		DrawText(TextFormat("AREA: %.1f", totalArea), 10, 40, 20, WHITE);
+		DrawText(TextFormat("PERIMETRO: %.1f", totalPerimeter), 10, 60, 20, WHITE);
+		DrawText(TextFormat("VOLUMEN: %.1f", totalVolume), 10, 80, 20, WHITE);
 
 		DrawFPS(10, 10);
 
