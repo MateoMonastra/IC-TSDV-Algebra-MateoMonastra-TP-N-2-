@@ -5,8 +5,8 @@
 
 using namespace std;
 
-float height = 0;
-float width = 0;
+float height = 0; // Esto funciona para Conseguir los calculos de la figura
+float width = 0; // 
 
 //Switch value random starter
 enum class axis
@@ -34,25 +34,22 @@ int main()
 	cout << "Por cuanto quieres que se divida el vector random? (El resultado de este numero es la altura de los escalones)" << endl;
 	cin >> userInput;
 
-	float segmentSize = 1.0f / userInput;
+	float segmentSize = 1.0f / userInput; // es el tamaño que va a tener cada piso de la piramide
 
-	float cLength = segmentSize * vectorLength;
-
-	cout << "Largo" << vectorLength << endl;
-	cout << "Alto" << cLength << endl;
+	float cLength = segmentSize * vectorLength; // esta variable es la altura
 
 	const int screenWidth = 1366;
 	const int screenHeight = 768;
 	InitWindow(screenWidth, screenHeight, "TP2 Algebra");
 
-	values(firstLineA, firstLineB, firstLineC, vectorLength, aAxis, cLength);
+	values(firstLineA, firstLineB, firstLineC, vectorLength, aAxis, cLength); // Es una funcion que le da valores a los Vectores3 (a los principales)
 
 	float totalArea = 0;
-	totalArea += (width * width) * 2;
+	totalArea += (width * width) * 2; // esto saca el area de la parte superior e inferior de la piramide, esta solo se hace una vez, por eso esta afuera de el loop
 	float totalPerimeter = 0;
 	float totalVolume = 0;
 
-	bool calculationStop = false;
+	bool calculationStop = false; // booleano que hace que los calculos se generen una sola vez (HardCodeado)
 
 	SetTargetFPS(144);
 
@@ -88,30 +85,32 @@ int main()
 		DrawLine3D(zero, firstLineB, GREEN);
 		DrawLine3D(zero, firstLineC, BLUE);
 
-		Vector3 displacementX = { firstLineA.x * segmentSize, firstLineA.y * segmentSize, firstLineA.z * segmentSize };
-		Vector3 displacementY = { firstLineB.x * segmentSize, firstLineB.y * segmentSize, firstLineB.z * segmentSize };
+		Vector3 displacementX = { firstLineA.x * segmentSize, firstLineA.y * segmentSize, firstLineA.z * segmentSize };// Reduce el largo de la base para el siguiente piso de la piramide A,B
+		Vector3 displacementY = { firstLineB.x * segmentSize, firstLineB.y * segmentSize, firstLineB.z * segmentSize };//
 
-		Vector3 upRight = Vector3Add(displacementX, displacementY);
-		Vector3 upLeft = Vector3Add(Vector3Scale(displacementX, -1.0f), displacementY);
-		Vector3 downRight = Vector3Subtract(displacementX, displacementY);
-		Vector3 downLeft = Vector3Subtract(Vector3Scale(displacementX, -1.0f), displacementY);
+		Vector3 upRight = Vector3Add(displacementX, displacementY);//Colocan el punto de partida donde lo necesites, en este caso estaria arriba a la derecha
+		Vector3 upLeft = Vector3Add(Vector3Scale(displacementX, -1.0f), displacementY);// en este arriba a la izquierda
+		Vector3 downRight = Vector3Subtract(displacementX, displacementY);// aca abajo a la derecha
+		Vector3 downLeft = Vector3Subtract(Vector3Scale(displacementX, -1.0f), displacementY);// aca abajo a la izquierda
 
-		Vector3 zeroToLine = zero;
-		Vector3 auxA = firstLineA;
-		Vector3 auxB = firstLineB;
-		Vector3 floatPoint = Vector3Add(firstLineA, firstLineB);
+		Vector3 zeroToLine = zero; // Punto de Comienzo para el dibujado
+		
+		Vector3 auxA = firstLineA; // Auxiliares para cambiar valores de lineas sin cambiar las originales
+		Vector3 auxB = firstLineB; // 
+		
+		Vector3 floatPoint = Vector3Add(firstLineA, firstLineB); // Altura del siguiente piso
 
-		for (int i = 0; i < (1 / segmentSize) / 2; i++)
+		for (int i = 0; i < (1 / segmentSize) / 2; i++)// es un for que se repite hasta que el segment size sea menor a la altura
 		{
-			DrawLine3D(Vector3Add(zeroToLine, (Vector3Scale(upRight, i))), Vector3Add(Vector3Add(zeroToLine, (Vector3Scale(upRight, i))), firstLineC), BLACK);
-			DrawLine3D(Vector3Add(auxA, (Vector3Scale(upLeft, i))), Vector3Add(Vector3Add(auxA, (Vector3Scale(upLeft, i))), firstLineC), BLACK);
-			DrawLine3D(Vector3Add(auxB, (Vector3Scale(downRight, i))), Vector3Add(Vector3Add(auxB, (Vector3Scale(downRight, i))), firstLineC), BLACK);
-			DrawLine3D(Vector3Add(floatPoint, (Vector3Scale(downLeft, i))), Vector3Add(Vector3Add(floatPoint, (Vector3Scale(downLeft, i))), firstLineC), BLACK);
+			DrawLine3D(Vector3Add(zeroToLine, (Vector3Scale(upRight, i))), Vector3Add(Vector3Add(zeroToLine, (Vector3Scale(upRight, i))), firstLineC), BLACK);// Dibujado de Pilar
+			DrawLine3D(Vector3Add(auxA, (Vector3Scale(upLeft, i))), Vector3Add(Vector3Add(auxA, (Vector3Scale(upLeft, i))), firstLineC), BLACK);// Dibujado de Pilar
+			DrawLine3D(Vector3Add(auxB, (Vector3Scale(downRight, i))), Vector3Add(Vector3Add(auxB, (Vector3Scale(downRight, i))), firstLineC), BLACK);// Dibujado de Pilar
+			DrawLine3D(Vector3Add(floatPoint, (Vector3Scale(downLeft, i))), Vector3Add(Vector3Add(floatPoint, (Vector3Scale(downLeft, i))), firstLineC), BLACK);// Dibujado de Pilar
 
-			DrawLine3D(Vector3Add(zeroToLine, Vector3Scale(upRight, i)), Vector3Add(auxA, Vector3Scale(upLeft, i)), GREEN);
-			DrawLine3D(Vector3Add(zeroToLine, Vector3Scale(upRight, i)), Vector3Add(auxB, Vector3Scale(downRight, i)), GREEN);
-			DrawLine3D(Vector3Add(floatPoint, Vector3Scale(downLeft, i)), Vector3Add(auxA, Vector3Scale(upLeft, i)), GREEN);
-			DrawLine3D(Vector3Add(floatPoint, Vector3Scale(downLeft, i)), Vector3Add(auxB, Vector3Scale(downRight, i)), GREEN);
+			DrawLine3D(Vector3Add(zeroToLine, Vector3Scale(upRight, i)), Vector3Add(auxA, Vector3Scale(upLeft, i)), GREEN);// Dibujado de Piso de abajo
+			DrawLine3D(Vector3Add(zeroToLine, Vector3Scale(upRight, i)), Vector3Add(auxB, Vector3Scale(downRight, i)), GREEN);// Dibujado de Piso de abajo
+			DrawLine3D(Vector3Add(floatPoint, Vector3Scale(downLeft, i)), Vector3Add(auxA, Vector3Scale(upLeft, i)), GREEN);// Dibujado de Piso de abajo
+			DrawLine3D(Vector3Add(floatPoint, Vector3Scale(downLeft, i)), Vector3Add(auxB, Vector3Scale(downRight, i)), GREEN);// Dibujado de Piso de abajo
 
 			if (!calculationStop)
 			{
@@ -121,31 +120,26 @@ int main()
 				width -= height * 2;	
 			}
 
-			zeroToLine = Vector3Add(zeroToLine, firstLineC);
-			auxA = Vector3Add(auxA, firstLineC);
-			auxB = Vector3Add(auxB, firstLineC);
-			floatPoint = Vector3Add(floatPoint, firstLineC);
+			zeroToLine = Vector3Add(zeroToLine, firstLineC);//Aumenta un piso mas alto a los auxiliares de la piramide
+			auxA = Vector3Add(auxA, firstLineC);//
+			auxB = Vector3Add(auxB, firstLineC);//
+			floatPoint = Vector3Add(floatPoint, firstLineC);//
 
-			DrawLine3D(Vector3Add(zeroToLine, Vector3Scale(upRight, i)), Vector3Add(auxA, Vector3Scale(upLeft, i)), GREEN);
-			DrawLine3D(Vector3Add(zeroToLine, Vector3Scale(upRight, i)), Vector3Add(auxB, Vector3Scale(downRight, i)), GREEN);
-			DrawLine3D(Vector3Add(floatPoint, Vector3Scale(downLeft, i)), Vector3Add(auxA, Vector3Scale(upLeft, i)), GREEN);
-			DrawLine3D(Vector3Add(floatPoint, Vector3Scale(downLeft, i)), Vector3Add(auxB, Vector3Scale(downRight, i)), GREEN);
-		}
-
-		if (!calculationStop)
-		{
-			cout << "AREA = " << totalArea << endl;
-			cout << "PERIMETRO = " << totalPerimeter << endl;
-			cout << "VOLUMEN = " << totalVolume << endl;
+			DrawLine3D(Vector3Add(zeroToLine, Vector3Scale(upRight, i)), Vector3Add(auxA, Vector3Scale(upLeft, i)), GREEN);// Dibujado de Piso de arriba
+			DrawLine3D(Vector3Add(zeroToLine, Vector3Scale(upRight, i)), Vector3Add(auxB, Vector3Scale(downRight, i)), GREEN);// Dibujado de Piso de arriba
+			DrawLine3D(Vector3Add(floatPoint, Vector3Scale(downLeft, i)), Vector3Add(auxA, Vector3Scale(upLeft, i)), GREEN);// Dibujado de Piso de arriba
+			DrawLine3D(Vector3Add(floatPoint, Vector3Scale(downLeft, i)), Vector3Add(auxB, Vector3Scale(downRight, i)), GREEN);// Dibujado de Piso de arriba
 		}
 
 		calculationStop = true;
 
 		EndMode3D();
-
-		DrawText(TextFormat("AREA: %.1f", totalArea), 10, 40, 20, WHITE);
-		DrawText(TextFormat("PERIMETRO: %.1f", totalPerimeter), 10, 60, 20, WHITE);
-		DrawText(TextFormat("VOLUMEN: %.1f", totalVolume), 10, 80, 20, WHITE);
+		DrawText(TextFormat("ALTO: %.4f", cLength), 10, 40, 20, WHITE);
+		DrawText(TextFormat("LARGO: %.01i", vectorLength), 10, 70, 20, WHITE);
+		DrawText(TextFormat("AREA: %.1f", totalArea), 10, 100, 20, WHITE);
+		DrawText(TextFormat("PERIMETRO: %.1f", totalPerimeter), 10, 130, 20, WHITE);
+		DrawText(TextFormat("VOLUMEN: %.1f", totalVolume), 10, 160, 20, WHITE);
+		
 
 		DrawFPS(10, 10);
 
