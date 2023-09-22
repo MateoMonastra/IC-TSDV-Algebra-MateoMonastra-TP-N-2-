@@ -1,8 +1,12 @@
 #include <iostream>
 #include "raylib.h"
 #include "raymath.h"
+#include <time.h>
 
 using namespace std;
+
+float height = 0;
+float width = 0;
 
 //Switch value random starter
 enum class axis
@@ -22,15 +26,20 @@ int main()
 	Vector3 zero = { 0, 0, 0 };
 
 	int userInput = 0;
-	int vectorLength = GetRandomValue(10, 10); //Largo de A y B
-	int aAxis = 1/*GetRandomValue(1, 3)*/; //Si es X, Y o Z
+	srand(time(NULL));
+	int vectorLength = rand() % 50 + 10; //Largo de A y B
+	srand(time(NULL));
+	int aAxis = rand() % 3 + 1; //Si es X, Y o Z
 
-	cout << "Por cuanto quieres que se divida el vector random? (El resultado de este numero es la distancia del eje z)" << endl;
+	cout << "Por cuanto quieres que se divida el vector random? (El resultado de este numero es la altura de los escalones)" << endl;
 	cin >> userInput;
 
 	float segmentSize = 1.0f / userInput;
 
 	float cLength = segmentSize * vectorLength;
+
+	cout << "Largo" << vectorLength << endl;
+	cout << "Alto" << cLength << endl;
 
 	const int screenWidth = 1366;
 	const int screenHeight = 768;
@@ -38,6 +47,12 @@ int main()
 
 	values(firstLineA, firstLineB, firstLineC, vectorLength, aAxis, cLength);
 
+	float totalArea = 0;
+	totalArea += (width * width) * 2;
+	float totalPerimeter = 0;
+	float totalVolume = 0;
+
+	bool calculationStop = false;
 
 	SetTargetFPS(144);
 
@@ -94,11 +109,19 @@ int main()
 			DrawLine3D(Vector3Add(auxA, (Vector3Scale(upLeft, i))), Vector3Add(Vector3Add(auxA, (Vector3Scale(upLeft, i))), firstLineC), BLACK);
 			DrawLine3D(Vector3Add(auxB, (Vector3Scale(downRight, i))), Vector3Add(Vector3Add(auxB, (Vector3Scale(downRight, i))), firstLineC), BLACK);
 			DrawLine3D(Vector3Add(floatPoint, (Vector3Scale(downLeft, i))), Vector3Add(Vector3Add(floatPoint, (Vector3Scale(downLeft, i))), firstLineC), BLACK);
-		
+
 			DrawLine3D(Vector3Add(zeroToLine, Vector3Scale(upRight, i)), Vector3Add(auxA, Vector3Scale(upLeft, i)), GREEN);
 			DrawLine3D(Vector3Add(zeroToLine, Vector3Scale(upRight, i)), Vector3Add(auxB, Vector3Scale(downRight, i)), GREEN);
 			DrawLine3D(Vector3Add(floatPoint, Vector3Scale(downLeft, i)), Vector3Add(auxA, Vector3Scale(upLeft, i)), GREEN);
 			DrawLine3D(Vector3Add(floatPoint, Vector3Scale(downLeft, i)), Vector3Add(auxB, Vector3Scale(downRight, i)), GREEN);
+
+			if (!calculationStop)
+			{
+				totalPerimeter += (width * 8) + height * 4;
+				totalArea += (height * width) * 4;
+				totalVolume += (width * width) * height;
+				width -= height * 2;	
+			}
 
 			zeroToLine = Vector3Add(zeroToLine, firstLineC);
 			auxA = Vector3Add(auxA, firstLineC);
@@ -110,6 +133,19 @@ int main()
 			DrawLine3D(Vector3Add(floatPoint, Vector3Scale(downLeft, i)), Vector3Add(auxA, Vector3Scale(upLeft, i)), GREEN);
 			DrawLine3D(Vector3Add(floatPoint, Vector3Scale(downLeft, i)), Vector3Add(auxB, Vector3Scale(downRight, i)), GREEN);
 		}
+
+		if (!calculationStop)
+		{
+			cout << "AREA = " << totalArea << endl;
+			cout << "PERIMETRO = " << totalPerimeter << endl;
+			cout << "VOLUMEN = " << totalVolume << endl;
+		}
+
+		DrawText(TextFormat("%01i", totalArea), 20, 20, 200, WHITE);
+		DrawText(TextFormat("%01i", totalPerimeter), 20, 40, 200, WHITE);
+		DrawText(TextFormat("%01i", totalVolume), 20, 60, 200, WHITE);
+
+		calculationStop = true;
 
 		EndMode3D();
 
@@ -138,6 +174,9 @@ void values(Vector3& firstLineA, Vector3& firstLineB, Vector3& firstLineC, int v
 		firstLineC.x = 0;
 		firstLineC.y = 0;
 		firstLineC.z = cLength;
+
+		width = firstLineA.x;
+		height = firstLineC.z;
 		break;
 
 	case (int)axis::AxisY:
@@ -152,6 +191,9 @@ void values(Vector3& firstLineA, Vector3& firstLineB, Vector3& firstLineC, int v
 		firstLineC.x = 0;
 		firstLineC.y = 0;
 		firstLineC.z = cLength;
+
+		width = firstLineA.y;
+		height = firstLineC.z;
 		break;
 
 	case (int)axis::AxisZ:
@@ -166,8 +208,10 @@ void values(Vector3& firstLineA, Vector3& firstLineB, Vector3& firstLineC, int v
 		firstLineC.x = cLength;
 		firstLineC.y = 0;
 		firstLineC.z = 0;
-		break;
 
+		width = firstLineA.z;
+		height = firstLineC.x;
+		break;
 	default:
 
 		break;
